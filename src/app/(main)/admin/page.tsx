@@ -27,7 +27,7 @@ export default async function AdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Administration</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Administration</h1>
         <p className="text-muted-foreground text-sm mt-1">Vue d'ensemble du contenu et des utilisateurs FitForAll.</p>
       </div>
 
@@ -76,12 +76,12 @@ export default async function AdminPage() {
         <h3 className="font-semibold text-sm mb-4">Derniers utilisateurs inscrits</h3>
         <div className="space-y-3">
           {recentUsers.map((u) => (
-            <div key={u.id} className="flex items-center justify-between py-2 border-b border-border last:border-0 text-sm">
-              <div>
-                <p className="font-medium">{u.name ?? "—"}</p>
-                <p className="text-xs text-muted-foreground">{u.email}</p>
+            <div key={u.id} className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap py-2 border-b border-border last:border-0 text-sm">
+              <div className="min-w-0">
+                <p className="font-medium truncate">{u.name ?? "—"}</p>
+                <p className="text-xs text-muted-foreground truncate">{u.email}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 shrink-0">
                 {u.profile && <Badge variant="outline" className="text-xs">{formatGoals(u.profile.goals)}</Badge>}
                 {!u.profile && <Badge variant="outline" className="text-xs text-muted-foreground">Onboarding incomplet</Badge>}
               </div>

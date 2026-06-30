@@ -23,6 +23,7 @@ const LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED"] as const
 export function SettingsClient({ profile, supprefs, user }: Props) {
   const router = useRouter()
   const [goals, setGoals] = useState<string[]>(profile.goals)
+  const [gender, setGender] = useState<string | undefined>(profile.gender ?? undefined)
   const [level, setLevel] = useState(profile.level)
   const [targetWeightKg, setTargetWeightKg] = useState(profile.targetWeightKg?.toString() ?? "")
   const [sessionDuration, setSessionDuration] = useState(profile.sessionDuration)
@@ -45,7 +46,7 @@ export function SettingsClient({ profile, supprefs, user }: Props) {
     await fetch("/api/settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goals, level, targetWeightKg: targetWeightKg || undefined, sessionDuration, sessionsPerWeek, useWhey, useCreatine, injuries }),
+      body: JSON.stringify({ goals, gender, level, targetWeightKg: targetWeightKg || undefined, sessionDuration, sessionsPerWeek, useWhey, useCreatine, injuries }),
     })
     setSaving(false)
     setSaved(true)
@@ -59,7 +60,7 @@ export function SettingsClient({ profile, supprefs, user }: Props) {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Réglages</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Réglages</h1>
         <p className="text-muted-foreground text-sm mt-1">Modifie ton profil, ton objectif et tes préférences.</p>
       </div>
 
@@ -94,6 +95,23 @@ export function SettingsClient({ profile, supprefs, user }: Props) {
           {hasFatLoss && hasMuscleGain && (
             <p className="text-xs text-primary mt-2">⚖️ Combo recomposition détecté — programme adapté en conséquence.</p>
           )}
+        </div>
+        <div>
+          <Label className="text-xs mb-2 block">Sexe (optionnel)</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { value: "female", label: "Femme" },
+              { value: "male", label: "Homme" },
+              { value: "other", label: "Autre" },
+            ].map((g) => (
+              <button key={g.value} type="button" onClick={() => setGender(gender === g.value ? undefined : g.value)}
+                className={cn("p-2 rounded-lg border text-xs font-medium transition-colors",
+                  gender === g.value ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"
+                )}>
+                {g.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div>
           <Label className="text-xs mb-2 block">Niveau</Label>

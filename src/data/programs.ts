@@ -148,6 +148,7 @@ export const PROGRAMS_SEED = [
     structure: "Focus fessiers, jambes, gainage",
     progression: "Augmenter les répétitions chaque semaine, ajouter des pulsations",
     nutritionNote: "Protéines suffisantes via alimentation — whey optionnelle, jamais obligatoire",
+    audience: "female",
     sessions: [
       { sessionName: "Fessiers & Jambes", order: 0, exerciseSlugs: ["EX009", "EX051", "EX052", "EX045", "EX053", "EX050"] },
       { sessionName: "Full Body Doux", order: 1, exerciseSlugs: ["EX006", "EX007", "EX003", "EX014", "EX028", "EX042"] },
@@ -164,6 +165,7 @@ export const PROGRAMS_SEED = [
     structure: "Bas du corps / Haut & Core / Fessiers / Full Body cardio",
     progression: "Tempo contrôlé, ajouter des séries, réduire les temps de repos",
     nutritionNote: "Protéines 1.8 g/kg — whey optionnelle si difficile à atteindre via alimentation",
+    audience: "female",
     sessions: [
       { sessionName: "Bas du corps — Jambes & Fessiers", order: 0, exerciseSlugs: ["EX029", "EX010", "EX037", "EX055", "EX022", "EX053"] },
       { sessionName: "Haut du corps & Core", order: 1, exerciseSlugs: ["EX001", "EX033", "EX027", "EX015", "EX028", "EX018"] },

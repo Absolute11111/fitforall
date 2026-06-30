@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { Dumbbell, ChevronRight, ChevronLeft, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { EQUIPMENT_OPTIONS } from "@/types"
 
 const STEPS = ["Toi", "Objectif", "Séances", "Compléments"]
 
@@ -52,10 +53,18 @@ export default function OnboardingPage() {
 
   const goals = watch("goals") ?? []
   const level = watch("level")
+  const gender = watch("gender")
   const sessionDuration = watch("sessionDuration")
   const sessionsPerWeek = watch("sessionsPerWeek")
+  const equipment = watch("equipment") ?? []
   const useWhey = watch("useWhey")
   const useCreatine = watch("useCreatine")
+
+  function toggleEquipment(value: string) {
+    const current = equipment as string[]
+    const next = current.includes(value) ? current.filter((e) => e !== value) : [...current, value]
+    setValue("equipment", next)
+  }
 
   async function onSubmit(data: OnboardingValues) {
     setLoading(true)
@@ -133,6 +142,24 @@ export default function OnboardingPage() {
                     <Label>Taille (cm)</Label>
                     <Input type="number" placeholder="175" {...register("heightCm")} />
                   </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Sexe <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: "female", label: "Femme" },
+                      { value: "male", label: "Homme" },
+                      { value: "other", label: "Autre" },
+                    ].map((g) => (
+                      <button key={g.value} type="button" onClick={() => setValue("gender", gender === g.value ? undefined : g.value as any)}
+                        className={cn("p-2.5 rounded-lg border text-sm font-medium transition-colors",
+                          gender === g.value ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground hover:border-primary/40"
+                        )}>
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Jamais bloquant — sert juste à affiner certains programmes (ex: fessiers/galbe).</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
@@ -248,6 +275,29 @@ export default function OnboardingPage() {
 
                 <div className="bg-secondary/30 rounded-xl p-4 text-sm text-muted-foreground">
                   → {Number(sessionsPerWeek)}x {Number(sessionDuration)} min/semaine = {Number(sessionsPerWeek) * Number(sessionDuration)} min d'effort. C'est largement suffisant pour progresser.
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-2">Matériel disponible <span className="text-muted-foreground font-normal">(optionnel)</span></p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {EQUIPMENT_OPTIONS.map((eq) => {
+                      const checked = (equipment as string[]).includes(eq.value)
+                      return (
+                        <button key={eq.value} type="button" onClick={() => toggleEquipment(eq.value)}
+                          className={cn("flex items-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-colors text-left",
+                            checked ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground hover:border-primary/40"
+                          )}>
+                          <div className={cn("w-4 h-4 rounded border-2 flex items-center justify-center shrink-0",
+                            checked ? "bg-primary border-primary" : "border-muted-foreground"
+                          )}>
+                            {checked && <CheckCircle className="w-3 h-3 text-primary-foreground" />}
+                          </div>
+                          {eq.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Une corde à sauter remplace avantageusement les exercices cardio classiques (jumping jacks, mountain climbers).</p>
                 </div>
               </div>
             )}

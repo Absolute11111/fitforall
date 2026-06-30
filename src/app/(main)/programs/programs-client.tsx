@@ -9,7 +9,7 @@ import { GOAL_LABELS, LEVEL_LABELS, formatGoals } from "@/types"
 import type { Program, Profile } from "@/generated/prisma"
 import { CheckCircle, Clock, Calendar, Dumbbell } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { scoreProgramForGoals } from "@/lib/nutrition"
+import { scoreProgramForGoals, scoreProgramForAudience } from "@/lib/nutrition"
 
 const GOAL_EMOJI: Record<string, string> = {
   FAT_LOSS: "🔥", MUSCLE_GAIN: "💪", RECOMPOSITION: "⚖️", HEALTH: "❤️", ENDURANCE: "🏃"
@@ -40,7 +40,10 @@ export function ProgramsClient({ programs, activeProgramId, profile }: Props) {
 
   const recommended = profile
     ? programs
-        .map((p) => ({ program: p, score: scoreProgramForGoals(p.goal, profile.goals) + (p.level === profile.level || p.level === "ALL" ? 0.5 : 0) }))
+        .map((p) => ({
+          program: p,
+          score: scoreProgramForGoals(p.goal, profile.goals) + scoreProgramForAudience(p.audience, profile.gender) + (p.level === profile.level || p.level === "ALL" ? 0.5 : 0),
+        }))
         .filter((c) => c.score > 0)
         .sort((a, b) => b.score - a.score)[0]?.program ?? null
     : null
@@ -48,7 +51,7 @@ export function ProgramsClient({ programs, activeProgramId, profile }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Programmes</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Programmes</h1>
         <p className="text-muted-foreground text-sm mt-1">
           {programs.length} programmes disponibles · Le programme recommandé est mis en avant selon ton profil
         </p>

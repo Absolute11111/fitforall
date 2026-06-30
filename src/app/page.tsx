@@ -46,19 +46,22 @@ export default function LandingPage() {
 
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-primary flex items-center justify-center">
-              <Dumbbell className="w-5 h-5 text-primary-foreground" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+            <div className="w-7 h-7 sm:w-9 sm:h-9 bg-primary flex items-center justify-center shrink-0">
+              <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-2xl tracking-wide normal-case">FitForAll</span>
+            <span className="font-display text-base sm:text-2xl tracking-wide normal-case truncate">FitForAll</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-4 shrink-0">
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="font-display tracking-wide text-base normal-case">Connexion</Button>
+              <Button variant="ghost" size="sm" className="font-display tracking-wide text-xs sm:text-base normal-case px-2 sm:px-4">Connexion</Button>
             </Link>
             <Link href="/register">
-              <Button size="sm" className="font-display tracking-wide text-base rounded-none px-5 normal-case">Commencer →</Button>
+              <Button size="sm" className="font-display tracking-wide text-xs sm:text-base rounded-none px-2.5 sm:px-5 normal-case">
+                <span className="sm:hidden">Commencer</span>
+                <span className="hidden sm:inline">Commencer →</span>
+              </Button>
             </Link>
           </div>
         </div>
@@ -98,9 +101,9 @@ export default function LandingPage() {
             { val: "12", label: "Programmes prêts" },
             { val: "0€", label: "Complément requis" },
           ].map((s) => (
-            <div key={s.label} className="py-8 sm:py-12 px-3 sm:px-8">
-              <div className="font-display text-5xl sm:text-7xl text-primary leading-none">{s.val}</div>
-              <div className="text-xs sm:text-sm text-muted-foreground mt-2 normal-case font-sans">{s.label}</div>
+            <div key={s.label} className="py-6 sm:py-12 px-2 sm:px-8">
+              <div className="font-display text-3xl sm:text-7xl text-primary leading-none">{s.val}</div>
+              <div className="text-[10px] sm:text-sm text-muted-foreground mt-2 normal-case font-sans leading-tight">{s.label}</div>
             </div>
           ))}
         </div>
@@ -155,7 +158,7 @@ export default function LandingPage() {
       <section className="py-24 sm:py-32">
         <div className="max-w-4xl mx-auto px-5 sm:px-8 text-center">
           <p className="text-primary font-display text-sm tracking-[0.3em] mb-4">UNE PRÉCISION IMPORTANTE</p>
-          <h2 className="font-display text-4xl sm:text-6xl leading-[0.95] mb-8">
+          <h2 className="font-display text-3xl sm:text-6xl leading-[0.95] mb-8">
             LA WHEY ET LA CRÉATINE NE SONT <span className="text-accent">JAMAIS</span> OBLIGATOIRES
           </h2>
           <p className="text-lg text-muted-foreground normal-case font-sans leading-relaxed max-w-2xl mx-auto">
@@ -170,9 +173,9 @@ export default function LandingPage() {
       <section className="py-20 sm:py-28 border-t border-border">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 space-y-16">
           {testimonials.map((t, i) => (
-            <div key={t.name} className={`flex flex-col gap-3 ${i % 2 === 1 ? "items-end text-right" : "items-start text-left"}`}>
-              <Quote className="w-8 h-8 text-primary/40" />
-              <p className="font-display text-2xl sm:text-3xl normal-case leading-snug max-w-2xl">"{t.text}"</p>
+            <div key={t.name} className={`flex flex-col gap-3 items-start text-left ${i % 2 === 1 ? "sm:items-end sm:text-right" : ""}`}>
+              <Quote className="w-7 h-7 sm:w-8 sm:h-8 text-primary/40" />
+              <p className="font-display text-xl sm:text-3xl normal-case leading-snug max-w-2xl">"{t.text}"</p>
               <p className="text-sm text-muted-foreground normal-case font-sans">
                 <span className="text-foreground font-semibold">{t.name}</span> · {t.goal}
               </p>
@@ -184,15 +187,15 @@ export default function LandingPage() {
       {/* CTA — full bleed bold block */}
       <section className="bg-primary text-primary-foreground py-24 sm:py-32">
         <div className="max-w-4xl mx-auto px-5 sm:px-8 text-center">
-          <h2 className="font-display text-5xl sm:text-7xl leading-[0.9] mb-8">
+          <h2 className="font-display text-4xl sm:text-7xl leading-[0.9] mb-8">
             PRÊT À COMMENCER ?
           </h2>
           <p className="text-lg normal-case font-sans mb-10 opacity-80 max-w-xl mx-auto">
             Gratuit, sans carte bancaire. Réponds à quelques questions, obtiens ton programme.
           </p>
           <Link href="/register">
-            <Button size="lg" variant="outline" className="font-display tracking-wide text-lg rounded-none h-14 px-10 normal-case gap-2 bg-primary-foreground text-primary border-primary-foreground hover:bg-primary-foreground/90">
-              Je veux mon programme <ArrowRight className="w-5 h-5" />
+            <Button size="lg" variant="outline" className="font-display tracking-wide text-base sm:text-lg rounded-none h-12 sm:h-14 px-6 sm:px-10 normal-case gap-2 w-full sm:w-auto bg-primary-foreground text-primary border-primary-foreground hover:bg-primary-foreground/90">
+              Je veux mon programme <ArrowRight className="w-5 h-5 shrink-0" />
             </Button>
           </Link>
         </div>

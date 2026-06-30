@@ -27,6 +27,7 @@ export const EQUIPMENT_OPTIONS = [
   { value: "mat", label: "Tapis" },
   { value: "chair", label: "Chaise" },
   { value: "elastic", label: "Élastique" },
+  { value: "jump_rope", label: "Corde à sauter" },
   { value: "pullup_bar", label: "Barre de traction (optionnel)" },
   { value: "backpack", label: "Sac à dos lesté" },
   { value: "bottles", label: "Bouteilles d'eau" },

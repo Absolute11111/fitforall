@@ -13,7 +13,7 @@ type Props = { exercises: Exercise[] }
 
 const MUSCLES = ["Tous", "Pectoraux", "Dos", "Jambes", "Fessiers", "Épaules", "Abdos/gainage", "Cardio", "Mobilité"]
 const LEVELS = ["Tous", "BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL"]
-const EQUIPMENT = ["Tous", "Poids du corps", "Chaise", "Élastique", "Aucun"]
+const EQUIPMENT = ["Tous", "Poids du corps", "Chaise", "Élastique", "Corde à sauter", "Aucun"]
 
 export function ExercisesClient({ exercises }: Props) {
   const [search, setSearch] = useState("")
@@ -35,7 +35,7 @@ export function ExercisesClient({ exercises }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Bibliothèque d'exercices</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Bibliothèque d'exercices</h1>
         <p className="text-muted-foreground text-sm mt-1">{exercises.length} exercices · filtre par muscle, niveau, matériel</p>
       </div>
 
@@ -101,11 +101,11 @@ export function ExercisesClient({ exercises }: Props) {
 
       {/* Detail modal */}
       {selected && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <Card className="max-w-md w-full p-6 bg-card border-border" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-start justify-between mb-3">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center sm:p-4" onClick={() => setSelected(null)}>
+          <Card className="max-w-md w-full p-6 bg-card border-border max-h-[85vh] overflow-y-auto rounded-b-none sm:rounded-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between mb-3 gap-3">
               <h2 className="text-lg font-bold">{selected.name}</h2>
-              <button onClick={() => setSelected(null)}><X className="w-5 h-5 text-muted-foreground" /></button>
+              <button onClick={() => setSelected(null)} className="shrink-0 p-2 -m-2" aria-label="Fermer"><X className="w-5 h-5 text-muted-foreground" /></button>
             </div>
             <div className="flex gap-2 flex-wrap mb-4">
               <Badge variant="outline" className="text-xs">{selected.mainMuscle}</Badge>

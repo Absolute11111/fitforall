@@ -21,12 +21,12 @@ async function main() {
   console.log(`✅ ${EXERCISES_SEED.length} exercises seeded`)
 
   for (const prog of PROGRAMS_SEED) {
-    const { sessions, slug, name, level, goal, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote } = prog
+    const { sessions, slug, name, level, goal, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote, audience } = prog as typeof prog & { audience?: string }
 
     const program = await prisma.program.upsert({
       where: { slug },
-      update: { name, level: level as any, goal: goal as any, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote },
-      create: { slug, name, level: level as any, goal: goal as any, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote },
+      update: { name, level: level as any, goal: goal as any, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote, audience },
+      create: { slug, name, level: level as any, goal: goal as any, sessionDuration, sessionsPerWeek, structure, progression, nutritionNote, audience },
     })
 
     await prisma.programSession.deleteMany({ where: { programId: program.id } })

@@ -67,7 +67,7 @@ export function Navbar() {
           >
             <LogOut className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(!open)}>
+          <Button variant="ghost" size="icon" className="md:hidden w-10 h-10" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
@@ -92,6 +92,19 @@ export function Navbar() {
               {label}
             </Link>
           ))}
+          {session?.user?.email === "admin@fitforall.com" && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                pathname.startsWith("/admin") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              )}
+            >
+              <ShieldCheck className="w-4 h-4" />
+              Admin
+            </Link>
+          )}
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground"

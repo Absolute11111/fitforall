@@ -71,26 +71,26 @@ export function ProgressClient({ measurements, workoutLogs, totalWorkouts, profi
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Progression</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Progression</h1>
         <p className="text-muted-foreground text-sm mt-1">Suis ton évolution sur le long terme.</p>
       </div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4 bg-card border-border text-center">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <Card className="p-3 sm:p-4 bg-card border-border text-center">
           <TrendingUp className="w-5 h-5 text-primary mx-auto mb-1" />
-          <p className="text-xl font-bold">{totalWorkouts}</p>
-          <p className="text-xs text-muted-foreground">Séances</p>
+          <p className="text-lg sm:text-xl font-bold">{totalWorkouts}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Séances</p>
         </Card>
-        <Card className="p-4 bg-card border-border text-center">
+        <Card className="p-3 sm:p-4 bg-card border-border text-center">
           <CheckCircle className="w-5 h-5 text-accent mx-auto mb-1" />
-          <p className="text-xl font-bold">{currentWeight ?? "—"}</p>
-          <p className="text-xs text-muted-foreground">kg actuel</p>
+          <p className="text-lg sm:text-xl font-bold">{currentWeight ?? "—"}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">kg actuel</p>
         </Card>
-        <Card className="p-4 bg-card border-border text-center">
+        <Card className="p-3 sm:p-4 bg-card border-border text-center">
           <Zap className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
-          <p className="text-xl font-bold">{diff ? `${diff.toFixed(1)} kg` : "—"}</p>
-          <p className="text-xs text-muted-foreground">restants</p>
+          <p className="text-lg sm:text-xl font-bold">{diff ? `${diff.toFixed(1)} kg` : "—"}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">restants</p>
         </Card>
       </div>
 
@@ -109,13 +109,13 @@ export function ProgressClient({ measurements, workoutLogs, totalWorkouts, profi
             <h3 className="font-semibold text-sm">Paliers vers ton objectif de poids</h3>
             <span className="text-xs text-muted-foreground">{weightProgressPct}%</span>
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
             {weightMilestones.map((m) => (
-              <div key={m.threshold} className={cn("rounded-xl border p-3 text-center transition-colors",
+              <div key={m.threshold} className={cn("rounded-xl border p-2 sm:p-3 text-center transition-colors",
                 m.reached ? "border-primary bg-primary/5" : "border-border opacity-50"
               )}>
-                {m.reached ? <CheckCircle className="w-4 h-4 text-primary mx-auto mb-1" /> : <Lock className="w-4 h-4 text-muted-foreground mx-auto mb-1" />}
-                <p className="text-xs font-semibold">{m.threshold}%</p>
+                {m.reached ? <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary mx-auto mb-1" /> : <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground mx-auto mb-1" />}
+                <p className="text-[10px] sm:text-xs font-semibold">{m.threshold}%</p>
               </div>
             ))}
           </div>
@@ -126,13 +126,13 @@ export function ProgressClient({ measurements, workoutLogs, totalWorkouts, profi
             <h3 className="font-semibold text-sm">Paliers de séances</h3>
             <span className="text-xs text-muted-foreground">{totalWorkouts} au total</span>
           </div>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2">
             {sessionMilestones.map((m) => (
-              <div key={m.threshold} className={cn("rounded-xl border p-3 text-center transition-colors",
+              <div key={m.threshold} className={cn("rounded-xl border p-2 sm:p-3 text-center transition-colors",
                 m.reached ? "border-accent bg-accent/5" : "border-border opacity-50"
               )}>
-                {m.reached ? <CheckCircle className="w-4 h-4 text-accent mx-auto mb-1" /> : <Lock className="w-4 h-4 text-muted-foreground mx-auto mb-1" />}
-                <p className="text-xs font-semibold">{m.threshold}</p>
+                {m.reached ? <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent mx-auto mb-1" /> : <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground mx-auto mb-1" />}
+                <p className="text-[10px] sm:text-xs font-semibold">{m.threshold}</p>
               </div>
             ))}
           </div>

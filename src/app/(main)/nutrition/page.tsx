@@ -43,7 +43,7 @@ export default async function NutritionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-5xl uppercase tracking-wide">Nutrition</h1>
+        <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Nutrition</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Recommandations adaptées à tes objectifs : <strong>{formatGoals(profile.goals)}</strong>
         </p>
@@ -56,12 +56,12 @@ export default async function NutritionPage() {
       </Card>
 
       {/* Macros */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {macros.map(({ icon: Icon, label, value, color, sub }) => (
-          <Card key={label} className="p-4 bg-card border-border">
+          <Card key={label} className="p-3 sm:p-4 bg-card border-border">
             <Icon className={`w-4 h-4 ${color} mb-2`} />
             <p className="text-xs text-muted-foreground">{label}</p>
-            <p className={`text-xl font-bold ${color}`}>{value}</p>
+            <p className={`text-lg sm:text-xl font-bold ${color} break-words`}>{value}</p>
             <p className="text-xs text-muted-foreground mt-1">{sub}</p>
           </Card>
         ))}
@@ -93,13 +93,13 @@ export default async function NutritionPage() {
             { label: "Whey protéinée", desc: "Option confort pour atteindre tes protéines facilement. Pas un booster magique.", active: supprefs?.useWhey ?? false, icon: CheckCircle, color: "text-blue-400" },
             { label: "Créatine monohydrate", desc: "3-5g/j n'importe quand. Aide la performance répétée. Demande avis médical si doutes.", active: supprefs?.useCreatine ?? false, icon: CheckCircle, color: "text-yellow-400" },
           ].map(({ label, desc, active, icon: Icon, color }) => (
-            <div key={label} className={`flex items-start gap-3 p-3 rounded-xl border ${active ? "border-border bg-secondary/20" : "border-transparent opacity-50"}`}>
+            <div key={label} className={`flex items-start gap-3 p-3 rounded-xl border flex-wrap sm:flex-nowrap ${active ? "border-border bg-secondary/20" : "border-transparent opacity-50"}`}>
               <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${active ? color : "text-muted-foreground"}`} />
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{label}</p>
                 <p className="text-xs text-muted-foreground">{desc}</p>
               </div>
-              {active && <Badge variant="outline" className="text-xs ml-auto shrink-0">Activé</Badge>}
+              {active && <Badge variant="outline" className="text-xs shrink-0">Activé</Badge>}
             </div>
           ))}
         </div>

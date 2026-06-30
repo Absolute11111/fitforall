@@ -164,7 +164,7 @@ export function WorkoutClient({ session, userId }: Props) {
               <h2 className="text-lg font-bold">{ex.name}</h2>
               <p className="text-sm text-muted-foreground">{ex.mainMuscle}</p>
             </div>
-            <button onClick={() => setShowInfo(!showInfo)} className="text-muted-foreground hover:text-foreground mt-0.5">
+            <button onClick={() => setShowInfo(!showInfo)} className="text-muted-foreground hover:text-foreground p-2 -m-2 shrink-0" aria-label="Plus d'infos">
               <Info className="w-5 h-5" />
             </button>
           </div>

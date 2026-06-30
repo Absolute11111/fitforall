@@ -32,7 +32,7 @@ export function calcNutrition(weightKg: number, goals: Goal[] | Goal, heightCm?:
     bmr,
     kcal: bmr + avgOffset,
     proteins: Math.round(w * maxProteinFactor),
-    carbs: goalList.includes("ENDURANCE") ? "Plus élevés" : "Modérés, autour entraînement",
+    carbs: goalList.includes("ENDURANCE") ? "Élevés" : "Modérés",
     lipids: "0.8 g/kg",
     msg: comboMsg ?? targets[0].msg,
     warn: targets.map((t) => t.warn).filter((v, i, arr) => arr.indexOf(v) === i).join(" "),
@@ -56,5 +56,16 @@ export function scoreProgramForGoals(programGoal: Goal, goals: Goal[]): number {
   const hasFatLoss = goals.includes("FAT_LOSS")
   const hasMuscleGain = goals.includes("MUSCLE_GAIN")
   if (hasFatLoss && hasMuscleGain && programGoal === "RECOMPOSITION") return 3
+  return 0
+}
+
+/**
+ * Bonus de score selon le sexe renseigné (toujours optionnel, jamais bloquant).
+ * Si la personne s'est identifiée "female" et que le programme cible explicitement
+ * cette audience (ex: programmes fessiers/galbe), on le priorise légèrement —
+ * sans jamais exclure les autres programmes, qui restent accessibles à tous.
+ */
+export function scoreProgramForAudience(programAudience: string | null | undefined, gender: string | null | undefined): number {
+  if (gender === "female" && programAudience === "female") return 1
   return 0
 }

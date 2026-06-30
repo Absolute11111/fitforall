@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { onboardingSchema } from "@/schemas"
-import { scoreProgramForGoals } from "@/lib/nutrition"
+import { scoreProgramForGoals, scoreProgramForAudience } from "@/lib/nutrition"
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -12,15 +12,15 @@ export async function POST(req: NextRequest) {
   const parsed = onboardingSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
 
-  const { name, age, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals, level,
+  const { name, age, gender, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals, level,
     sessionDuration, sessionsPerWeek, equipment, injuries, useWhey, useCreatine } = parsed.data
 
   await db.user.update({ where: { id: session.user.id }, data: { name } })
 
   await db.profile.upsert({
     where: { userId: session.user.id },
-    update: { age, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals: goals as any, level: level as any, sessionDuration, sessionsPerWeek, equipment, injuries },
-    create: { userId: session.user.id, age, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals: goals as any, level: level as any, sessionDuration, sessionsPerWeek, equipment, injuries },
+    update: { age, gender, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals: goals as any, level: level as any, sessionDuration, sessionsPerWeek, equipment, injuries },
+    create: { userId: session.user.id, age, gender, heightCm, currentWeightKg, targetWeightKg, targetWeeks, goals: goals as any, level: level as any, sessionDuration, sessionsPerWeek, equipment, injuries },
   })
 
   await db.supplementPreferences.upsert({
@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
   })
 
   const best = candidates
-    .map((p) => ({ program: p, score: scoreProgramForGoals(p.goal, goals as any) + (p.level === level ? 0.5 : 0) }))
+    .map((p) => ({
+      program: p,
+      score: scoreProgramForGoals(p.goal, goals as any) + scoreProgramForAudience(p.audience, gender) + (p.level === level ? 0.5 : 0),
+    }))
     .filter((c) => c.score > 0)
     .sort((a, b) => b.score - a.score)[0]?.program
 

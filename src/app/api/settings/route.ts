@@ -6,11 +6,11 @@ export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
 
-  const { goals, level, targetWeightKg, sessionDuration, sessionsPerWeek, useWhey, useCreatine, injuries } = await req.json()
+  const { goals, gender, level, targetWeightKg, sessionDuration, sessionsPerWeek, useWhey, useCreatine, injuries } = await req.json()
 
   await db.profile.update({
     where: { userId: session.user.id },
-    data: { goals, level, targetWeightKg, sessionDuration, sessionsPerWeek, injuries },
+    data: { goals, gender, level, targetWeightKg, sessionDuration, sessionsPerWeek, injuries },
   })
 
   await db.supplementPreferences.upsert({

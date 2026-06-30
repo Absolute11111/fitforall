@@ -71,7 +71,7 @@ export default async function DashboardPage() {
       {/* Welcome */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-5xl uppercase tracking-wide">Bonjour, {session.user.name?.split(" ")[0]} 👋</h1>
+          <h1 className="font-display text-3xl sm:text-5xl uppercase tracking-wide">Bonjour, {session.user.name?.split(" ")[0]} 👋</h1>
           <p className="text-muted-foreground text-sm mt-0.5">{motivation}</p>
         </div>
         {streak > 0 && (
@@ -84,18 +84,18 @@ export default async function DashboardPage() {
 
       {/* Today session CTA */}
       {todaySession && (
-        <Card className="p-5 bg-primary/5 border-primary/20 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <Card className="p-5 bg-primary/5 border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
               <Dumbbell className="w-5 h-5 text-primary-foreground" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Séance du jour</p>
-              <p className="font-semibold">{userProgram?.program.name} — {todaySession.sessionName}</p>
+              <p className="font-semibold truncate">{userProgram?.program.name} — {todaySession.sessionName}</p>
             </div>
           </div>
-          <Link href={`/workout/${todaySession.id}`}>
-            <Button className="gap-1 shrink-0">
+          <Link href={`/workout/${todaySession.id}`} className="w-full sm:w-auto">
+            <Button className="gap-1 shrink-0 w-full sm:w-auto">
               Commencer <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
