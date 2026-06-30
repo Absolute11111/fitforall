@@ -7,11 +7,12 @@ export default async function ProgressPage() {
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const [measurements, workoutLogs, profile] = await Promise.all([
+  const [measurements, workoutLogs, totalWorkouts, profile] = await Promise.all([
     db.measurement.findMany({ where: { userId: session.user.id }, orderBy: { recordedAt: "asc" }, take: 90 }),
     db.workoutLog.findMany({ where: { userId: session.user.id }, orderBy: { completedAt: "desc" }, take: 20, include: { programSession: { include: { program: true } } } }),
+    db.workoutLog.count({ where: { userId: session.user.id } }),
     db.profile.findUnique({ where: { userId: session.user.id } }),
   ])
 
-  return <ProgressClient measurements={measurements} workoutLogs={workoutLogs} profile={profile} />
+  return <ProgressClient measurements={measurements} workoutLogs={workoutLogs} totalWorkouts={totalWorkouts} profile={profile} />
 }
