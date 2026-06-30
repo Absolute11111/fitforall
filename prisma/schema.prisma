@@ -108,6 +108,11 @@ model Exercise {
   impact           Int      @default(2)
   pattern          String?
   sourceUrl        String?
+  family           String?
+  objective        String?
+  bodyweightOnly   Boolean  @default(false)
+  easyVariant      String?
+  hardVariant      String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

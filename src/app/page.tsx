@@ -97,7 +97,7 @@ export default function LandingPage() {
       <section className="border-y border-border">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-3 divide-x divide-border">
           {[
-            { val: "55", label: "Exercices référencés" },
+            { val: "15K+", label: "Exercices référencés" },
             { val: "12", label: "Programmes prêts" },
             { val: "0€", label: "Complément requis" },
           ].map((s) => (
