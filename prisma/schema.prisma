@@ -1,0 +1,238 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts              Account[]
+  sessions              Session[]
+  profile               Profile?
+  workoutLogs           WorkoutLog[]
+  measurements          Measurement[]
+  supplementPreferences SupplementPreferences?
+  userPrograms          UserProgram[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  age             Int?
+  gender          String?
+  heightCm        Int?
+  currentWeightKg Decimal? @db.Decimal(5, 2)
+  targetWeightKg  Decimal? @db.Decimal(5, 2)
+  targetWeeks     Int?     @default(16)
+  goals           Goal[]   @default([HEALTH])
+  level           Level    @default(BEGINNER)
+  sessionDuration Int      @default(25)
+  sessionsPerWeek Int      @default(3)
+  equipment       String[]
+  injuries        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Exercise {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  mainMuscle       String
+  secondaryMuscles String[]
+  level            Level
+  equipment        String
+  exerciseType     String
+  equipmentNeeded  String?
+  defaultSets      String?
+  restSeconds      Int?
+  instructions     String?
+  safety           String?
+  intensity        Int      @default(3)
+  impact           Int      @default(2)
+  pattern          String?
+  sourceUrl        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  programExercises ProgramExercise[]
+
+  @@map("exercises")
+}
+
+model Program {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  level           Level
+  goal            Goal
+  sessionDuration Int
+  sessionsPerWeek Int
+  structure       String?
+  progression     String?
+  nutritionNote   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sessions     ProgramSession[]
+  userPrograms UserProgram[]
+
+  @@map("programs")
+}
+
+model ProgramSession {
+  id          String   @id @default(cuid())
+  programId   String
+  sessionName String
+  dayOfWeek   Int?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  program     Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises   ProgramExercise[]
+  workoutLogs WorkoutLog[]
+
+  @@map("program_sessions")
+}
+
+model ProgramExercise {
+  id               String  @id @default(cuid())
+  programSessionId String
+  exerciseId       String
+  order            Int
+  sets             String?
+  reps             String?
+  restSeconds      Int?
+
+  programSession ProgramSession @relation(fields: [programSessionId], references: [id], onDelete: Cascade)
+  exercise       Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@map("program_exercises")
+}
+
+model UserProgram {
+  id        String    @id @default(cuid())
+  userId    String
+  programId String
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  isActive  Boolean   @default(true)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program Program @relation(fields: [programId], references: [id])
+
+  @@map("user_programs")
+}
+
+model WorkoutLog {
+  id               String   @id @default(cuid())
+  userId           String
+  programSessionId String?
+  completedAt      DateTime @default(now())
+  durationMin      Int?
+  rpe              Int?
+  feedback         String?
+  notes            String?
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programSession ProgramSession? @relation(fields: [programSessionId], references: [id])
+
+  @@map("workout_logs")
+}
+
+model Measurement {
+  id          String   @id @default(cuid())
+  userId      String
+  recordedAt  DateTime @default(now())
+  weightKg    Decimal? @db.Decimal(5, 2)
+  waistCm     Decimal? @db.Decimal(5, 2)
+  energyLevel Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("measurements")
+}
+
+model SupplementPreferences {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  useWhey     Boolean  @default(false)
+  useCreatine Boolean  @default(false)
+  useCaffeine Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("supplement_preferences")
+}
+
+enum Goal {
+  FAT_LOSS
+  MUSCLE_GAIN
+  RECOMPOSITION
+  HEALTH
+  ENDURANCE
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL
+}
