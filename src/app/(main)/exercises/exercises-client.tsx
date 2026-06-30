@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { LEVEL_LABELS } from "@/types"
 import type { Level } from "@/generated/prisma"
 import { Search, Info, X, ChevronLeft, ChevronRight, SlidersHorizontal, Dumbbell } from "lucide-react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 type Exercise = {
@@ -17,6 +18,7 @@ type Exercise = {
   safety: string | null; intensity: number; impact: number; family: string | null
   objective: string | null; bodyweightOnly: boolean; easyVariant: string | null
   hardVariant: string | null; secondaryMuscles: string[]; restSeconds: number | null
+  imageUrl: string | null
 }
 
 type Filters = { q?: string; level?: string; equipment?: string; objective?: string; bodyweight?: string }
@@ -222,7 +224,18 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {exercises.map((ex) => (
-            <Card key={ex.id} onClick={() => setSelected(ex)} className="p-4 bg-card border-border hover:border-primary/30 cursor-pointer transition-colors">
+            <Card key={ex.id} onClick={() => setSelected(ex)} className="overflow-hidden bg-card border-border hover:border-primary/30 cursor-pointer transition-colors">
+              {ex.imageUrl ? (
+                <div className="relative h-32 bg-secondary/30">
+                  <Image src={ex.imageUrl} alt={ex.name} fill className="object-cover" unoptimized />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/90 to-transparent" />
+                </div>
+              ) : (
+                <div className="h-12 bg-secondary/20 flex items-center justify-center">
+                  <Dumbbell className="w-4 h-4 text-muted-foreground/30" />
+                </div>
+              )}
+              <div className="p-3">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <h3 className="font-semibold text-sm leading-tight">{ex.name}</h3>
                 <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
@@ -234,6 +247,7 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
                 {ex.objective && <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">{ex.objective}</Badge>}
               </div>
               {ex.defaultSets && <p className="text-xs text-muted-foreground">{ex.defaultSets}</p>}
+              </div>
             </Card>
           ))}
         </div>
@@ -257,11 +271,28 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
       {/* Detail modal — bottom sheet on mobile */}
       {selected && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center sm:p-4" onClick={() => setSelected(null)}>
-          <Card className="max-w-md w-full p-6 bg-card border-border max-h-[85vh] overflow-y-auto rounded-t-xl sm:rounded-xl" onClick={(e) => e.stopPropagation()}>
+          <Card className="max-w-md w-full bg-card border-border max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-xl" onClick={(e) => e.stopPropagation()}>
+            {/* Image */}
+            {selected.imageUrl && (
+              <div className="relative h-52 sm:h-64 bg-secondary/30 rounded-t-xl overflow-hidden">
+                <Image src={selected.imageUrl} alt={selected.name} fill className="object-cover" unoptimized />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+                <button onClick={() => setSelected(null)} className="absolute top-3 right-3 p-2 bg-black/50 rounded-full" aria-label="Fermer">
+                  <X className="w-4 h-4 text-white" />
+                </button>
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h2 className="text-xl font-bold leading-tight drop-shadow-lg">{selected.name}</h2>
+                  <p className="text-sm text-muted-foreground">{selected.mainMuscle}</p>
+                </div>
+              </div>
+            )}
+            <div className="p-5">
+            {!selected.imageUrl && (
             <div className="flex items-start justify-between mb-3 gap-3">
               <h2 className="text-lg font-bold leading-tight">{selected.name}</h2>
               <button onClick={() => setSelected(null)} className="shrink-0 p-2 -m-2" aria-label="Fermer"><X className="w-5 h-5 text-muted-foreground" /></button>
             </div>
+            )}
             <div className="flex gap-2 flex-wrap mb-4">
               <Badge variant="outline" className="text-xs">{selected.mainMuscle}</Badge>
               <Badge variant="outline" className="text-xs">{LEVEL_LABELS[selected.level]}</Badge>
@@ -281,6 +312,7 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
               <span>Intensité : {"●".repeat(selected.intensity)}{"○".repeat(5 - selected.intensity)}</span>
               <span>Impact : {IMPACT_MAP[selected.impact] ?? selected.impact}</span>
             </div>
+            </div>{/* end p-5 */}
           </Card>
         </div>
       )}

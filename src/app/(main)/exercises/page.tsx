@@ -48,7 +48,7 @@ export default async function ExercisesPage({ searchParams }: { searchParams: Se
         equipment: true, exerciseType: true, defaultSets: true, instructions: true,
         safety: true, intensity: true, impact: true, family: true, objective: true,
         bodyweightOnly: true, easyVariant: true, hardVariant: true, secondaryMuscles: true,
-        restSeconds: true,
+        restSeconds: true, imageUrl: true,
       },
     }),
     db.exercise.count({ where }),

@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info, AlertTriangle, Package } from "lucide-react"
+import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info, AlertTriangle, Package, ImageOff } from "lucide-react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { EQUIPMENT_OPTIONS, EQUIPMENT_MAP } from "@/types"
 
@@ -22,6 +23,7 @@ type Exercise = {
   pattern: string | null
   equipment?: string
   easyVariant?: string | null
+  imageUrl?: string | null
 }
 
 type ProgramExercise = {
@@ -178,7 +180,31 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
         const hasEquip = hasEquipment(ex.equipment, userEquipment)
         const equipLabel = getEquipmentLabel(ex.equipment)
         return (
-        <Card className={cn("p-5 border-border space-y-4 bg-card", !hasEquip && "border-yellow-500/40 bg-yellow-900/10")}>
+        <Card className={cn("border-border overflow-hidden bg-card", !hasEquip && "border-yellow-500/40 bg-yellow-900/10")}>
+          {/* Exercise image */}
+          {ex.imageUrl ? (
+            <div className="relative w-full h-48 sm:h-56 bg-secondary/30">
+              <Image
+                src={ex.imageUrl}
+                alt={ex.name}
+                fill
+                className="object-cover object-center"
+                unoptimized
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h2 className="text-lg font-bold drop-shadow-md">{ex.name}</h2>
+                <p className="text-sm text-muted-foreground">{ex.mainMuscle}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-24 bg-secondary/20 flex items-center justify-center">
+              <ImageOff className="w-8 h-8 text-muted-foreground/30" />
+            </div>
+          )}
+
+          <div className="p-5 space-y-4">
           {/* Equipment status banner */}
           {ex.equipment && !["Poids du corps", "Aucun", ""].includes(ex.equipment) && (
             <div className={cn("flex items-center gap-2 text-xs px-3 py-2 rounded-lg",
@@ -194,15 +220,23 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
             </div>
           )}
 
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h2 className="text-lg font-bold">{ex.name}</h2>
-              <p className="text-sm text-muted-foreground">{ex.mainMuscle}</p>
+          {/* Name shown above image already; show info button + sets row here */}
+          {!ex.imageUrl && (
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h2 className="text-lg font-bold">{ex.name}</h2>
+                <p className="text-sm text-muted-foreground">{ex.mainMuscle}</p>
+              </div>
+              <button onClick={() => setShowInfo(!showInfo)} className="text-muted-foreground hover:text-foreground p-2 -m-2 shrink-0" aria-label="Plus d'infos">
+                <Info className="w-5 h-5" />
+              </button>
             </div>
-            <button onClick={() => setShowInfo(!showInfo)} className="text-muted-foreground hover:text-foreground p-2 -m-2 shrink-0" aria-label="Plus d'infos">
+          )}
+          {ex.imageUrl && (
+            <button onClick={() => setShowInfo(!showInfo)} className="text-muted-foreground hover:text-foreground p-2 -m-2 shrink-0 ml-auto flex" aria-label="Plus d'infos">
               <Info className="w-5 h-5" />
             </button>
-          </div>
+          )}
 
           <div className="flex gap-2 flex-wrap">
             {ex.defaultSets && <Badge variant="outline" className="text-xs">{ex.defaultSets}</Badge>}
@@ -256,6 +290,7 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
               <Timer className="w-4 h-4" />
             </Button>
           </div>
+          </div>{/* end p-5 content div */}
         </Card>
         )
       })()}

@@ -110,6 +110,7 @@ model Exercise {
   sourceUrl        String?
   family           String?
   objective        String?
+  imageUrl         String?
   bodyweightOnly   Boolean  @default(false)
   easyVariant      String?
   hardVariant      String?
