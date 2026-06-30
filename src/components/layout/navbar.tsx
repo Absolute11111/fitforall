@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { Dumbbell, LayoutDashboard, ListChecks, TrendingUp, Utensils, BookOpen, Settings, LogOut, Menu, X, ShieldCheck } from "lucide-react"
+import { Dumbbell, LayoutDashboard, ListChecks, TrendingUp, Utensils, BookOpen, Settings, LogOut, Menu, X, ShieldCheck, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -14,6 +14,7 @@ const navItems = [
   { href: "/exercises", label: "Exercices", icon: BookOpen },
   { href: "/progress", label: "Progression", icon: TrendingUp },
   { href: "/nutrition", label: "Nutrition", icon: Utensils },
+  { href: "/equipment", label: "Équipement", icon: Package },
   { href: "/settings", label: "Réglages", icon: Settings },
 ]
 

@@ -21,5 +21,10 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 
   if (!programSession) redirect("/programs")
 
-  return <WorkoutClient session={programSession} userId={session.user.id} />
+  const profile = await db.profile.findUnique({
+    where: { userId: session.user.id },
+    select: { equipment: true },
+  })
+
+  return <WorkoutClient session={programSession} userId={session.user.id} userEquipment={profile?.equipment ?? []} />
 }

@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { calcNutrition, calcBmi, bmiLabel } from "@/lib/nutrition"
-import { GOAL_LABELS, LEVEL_LABELS, formatGoals } from "@/types"
-import { Flame, TrendingDown, TrendingUp, Dumbbell, Calendar, Zap, ArrowRight, Plus } from "lucide-react"
+import { GOAL_LABELS, LEVEL_LABELS, formatGoals, EQUIPMENT_OPTIONS } from "@/types"
+import { Flame, TrendingDown, TrendingUp, Dumbbell, Calendar, Zap, ArrowRight, Plus, Package } from "lucide-react"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -215,6 +215,38 @@ export default async function DashboardPage() {
             </Button>
           </Link>
         </div>
+      </Card>
+
+      {/* Widget équipement */}
+      <Card className="p-5 bg-card border-border">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Package className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm">Mon équipement</h3>
+          </div>
+          <Link href="/equipment">
+            <Button variant="ghost" size="sm" className="text-xs h-7 gap-1">
+              <Plus className="w-3 h-3" /> Modifier
+            </Button>
+          </Link>
+        </div>
+        {profile.equipment.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.equipment.map((eq) => {
+              const opt = EQUIPMENT_OPTIONS.find((o) => o.value === eq)
+              return (
+                <span key={eq} className="flex items-center gap-1.5 text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full font-medium">
+                  {opt?.emoji ?? "🏋️"} {opt?.label ?? eq}
+                </span>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Aucun équipement renseigné.{" "}
+            <Link href="/equipment" className="text-primary hover:underline">Ajouter mon équipement →</Link>
+          </p>
+        )}
       </Card>
     </div>
   )

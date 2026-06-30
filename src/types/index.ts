@@ -23,15 +23,36 @@ export function formatGoals(goals: Goal[]): string {
 }
 
 export const EQUIPMENT_OPTIONS = [
-  { value: "none", label: "Aucun matériel" },
-  { value: "mat", label: "Tapis" },
-  { value: "chair", label: "Chaise" },
-  { value: "elastic", label: "Élastique" },
-  { value: "jump_rope", label: "Corde à sauter" },
-  { value: "pullup_bar", label: "Barre de traction (optionnel)" },
-  { value: "backpack", label: "Sac à dos lesté" },
-  { value: "bottles", label: "Bouteilles d'eau" },
+  { value: "mat", label: "Tapis de sol", emoji: "🟫", desc: "Indispensable pour les exercices au sol" },
+  { value: "jump_rope", label: "Corde à sauter", emoji: "🪢", desc: "Cardio ultra-efficace, remplace jumping jacks × 3" },
+  { value: "elastic", label: "Élastique de résistance", emoji: "🫀", desc: "Complète les exercices de tirage sans barre" },
+  { value: "dumbbells", label: "Haltères", emoji: "🏋️", desc: "Ajoute de la charge pour prise de muscle" },
+  { value: "pullup_bar", label: "Barre de traction", emoji: "⬆️", desc: "Dos et biceps — à fixer dans une porte" },
+  { value: "kettlebell", label: "Kettlebell", emoji: "⚫", desc: "Polyvalent, idéal pour swing et circuit training" },
+  { value: "barbell", label: "Barre olympique", emoji: "🏋️", desc: "Pour squats, développés, soulevés de terre" },
+  { value: "chair", label: "Chaise / banc", emoji: "🪑", desc: "Dips, step-up, split squat bulgare" },
+  { value: "backpack", label: "Sac à dos lesté", emoji: "🎒", desc: "Remplacement économique des haltères" },
+  { value: "bottles", label: "Bouteilles lestées", emoji: "🧴", desc: "Quelques kilos pour les épaules et biceps" },
+  { value: "foam_roller", label: "Foam roller", emoji: "🫀", desc: "Récupération et mobilité musculaire" },
+  { value: "step", label: "Step / marche", emoji: "📦", desc: "Cardio et step-up sans impact" },
+  { value: "trx", label: "TRX / sangles", emoji: "🪢", desc: "Entraînement au poids du corps suspendu" },
+  { value: "bike", label: "Vélo d'appartement", emoji: "🚴", desc: "Cardio sans impact articulaire" },
+  { value: "rower", label: "Rameur", emoji: "🚣", desc: "Full body cardio — dos, jambes, bras" },
 ]
+
+export const EQUIPMENT_MAP: Record<string, string> = {
+  "Corde à sauter": "jump_rope",
+  "Élastique": "elastic",
+  "Haltères": "dumbbells",
+  "Barre de traction optionnelle": "pullup_bar",
+  "Barre traction optionnelle": "pullup_bar",
+  "Kettlebell": "kettlebell",
+  "Barre": "barbell",
+  "Chaise": "chair",
+  "Tapis": "mat",
+  "Poids du corps": "none",
+  "Aucun": "none",
+}
 
 export type NutritionInfo = {
   calories: number

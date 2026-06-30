@@ -6,8 +6,9 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info } from "lucide-react"
+import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info, AlertTriangle, Package } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { EQUIPMENT_OPTIONS, EQUIPMENT_MAP } from "@/types"
 
 type Exercise = {
   id: string
@@ -19,6 +20,8 @@ type Exercise = {
   safety: string | null
   intensity: number
   pattern: string | null
+  equipment?: string
+  easyVariant?: string | null
 }
 
 type ProgramExercise = {
@@ -35,6 +38,20 @@ type Props = {
     exercises: ProgramExercise[]
   }
   userId: string
+  userEquipment: string[]
+}
+
+function hasEquipment(exerciseEquipment: string | undefined, userEquipment: string[]): boolean {
+  if (!exerciseEquipment) return true
+  const noEquipRequired = ["Poids du corps", "Aucun", "none", ""].includes(exerciseEquipment)
+  if (noEquipRequired) return true
+  const mapped = EQUIPMENT_MAP[exerciseEquipment] ?? exerciseEquipment.toLowerCase()
+  return userEquipment.some((e) => e === mapped || e.toLowerCase() === exerciseEquipment.toLowerCase())
+}
+
+function getEquipmentLabel(eq: string | undefined): string {
+  if (!eq) return ""
+  return EQUIPMENT_OPTIONS.find((o) => o.value === EQUIPMENT_MAP[eq])?.label ?? eq
 }
 
 function useTimer(initial: number) {
@@ -54,7 +71,7 @@ function useTimer(initial: number) {
   return { time, running, start, reset }
 }
 
-export function WorkoutClient({ session, userId }: Props) {
+export function WorkoutClient({ session, userId, userEquipment }: Props) {
   const router = useRouter()
   const [current, setCurrent] = useState(0)
   const [completed, setCompleted] = useState<Set<number>>(new Set())
@@ -157,8 +174,26 @@ export function WorkoutClient({ session, userId }: Props) {
       </div>
 
       {/* Current exercise */}
-      {ex && (
-        <Card className="p-5 bg-card border-border space-y-4">
+      {ex && (() => {
+        const hasEquip = hasEquipment(ex.equipment, userEquipment)
+        const equipLabel = getEquipmentLabel(ex.equipment)
+        return (
+        <Card className={cn("p-5 border-border space-y-4 bg-card", !hasEquip && "border-yellow-500/40 bg-yellow-900/10")}>
+          {/* Equipment status banner */}
+          {ex.equipment && !["Poids du corps", "Aucun", ""].includes(ex.equipment) && (
+            <div className={cn("flex items-center gap-2 text-xs px-3 py-2 rounded-lg",
+              hasEquip
+                ? "bg-primary/10 text-primary border border-primary/20"
+                : "bg-yellow-900/30 text-yellow-400 border border-yellow-500/30"
+            )}>
+              {hasEquip ? (
+                <><CheckCircle className="w-3.5 h-3.5 shrink-0" /> <span>Matériel disponible : <strong>{equipLabel || ex.equipment}</strong></span></>
+              ) : (
+                <><AlertTriangle className="w-3.5 h-3.5 shrink-0" /> <span>Tu n'as pas <strong>{equipLabel || ex.equipment}</strong> — variante sans matériel proposée ci-dessous.</span></>
+              )}
+            </div>
+          )}
+
           <div className="flex items-start justify-between gap-2">
             <div>
               <h2 className="text-lg font-bold">{ex.name}</h2>
@@ -176,6 +211,16 @@ export function WorkoutClient({ session, userId }: Props) {
               <span key={i} className={i < ex.intensity ? "text-primary" : "text-muted-foreground/30"}>●</span>
             ))}
           </div>
+
+          {/* Easy variant if missing equipment */}
+          {!hasEquip && ex.easyVariant && (
+            <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
+              <p className="text-xs font-medium text-yellow-400 mb-1 flex items-center gap-1.5">
+                <Package className="w-3.5 h-3.5" /> Variante sans {equipLabel || ex.equipment}
+              </p>
+              <p className="text-sm text-foreground/90">{ex.easyVariant}</p>
+            </div>
+          )}
 
           {showInfo && (
             <div className="space-y-2 text-sm bg-secondary/20 rounded-xl p-4">
@@ -212,7 +257,8 @@ export function WorkoutClient({ session, userId }: Props) {
             </Button>
           </div>
         </Card>
-      )}
+        )
+      })()}
 
       {/* Nav */}
       <div className="flex gap-3">
