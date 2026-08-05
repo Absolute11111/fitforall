@@ -226,8 +226,8 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
           {exercises.map((ex) => (
             <Card key={ex.id} onClick={() => setSelected(ex)} className="overflow-hidden bg-card border-border hover:border-primary/30 cursor-pointer transition-colors">
               {ex.imageUrl ? (
-                <div className="relative h-32 bg-secondary/30">
-                  <Image src={ex.imageUrl} alt={ex.name} fill className="object-cover" unoptimized />
+                <div className="relative h-32 bg-secondary/50">
+                  <Image src={ex.imageUrl} alt={ex.name} fill className="object-contain p-1" unoptimized />
                   <div className="absolute inset-0 bg-gradient-to-t from-card/90 to-transparent" />
                 </div>
               ) : (
@@ -274,8 +274,8 @@ export function ExercisesClient({ exercises, total, totalPages, currentPage, cur
           <Card className="max-w-md w-full bg-card border-border max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-xl" onClick={(e) => e.stopPropagation()}>
             {/* Image */}
             {selected.imageUrl && (
-              <div className="relative h-52 sm:h-64 bg-secondary/30 rounded-t-xl overflow-hidden">
-                <Image src={selected.imageUrl} alt={selected.name} fill className="object-cover" unoptimized />
+              <div className="relative h-52 sm:h-64 bg-secondary/50 rounded-t-xl overflow-hidden">
+                <Image src={selected.imageUrl} alt={selected.name} fill className="object-contain p-2" unoptimized />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
                 <button onClick={() => setSelected(null)} className="absolute top-3 right-3 p-2 bg-black/50 rounded-full" aria-label="Fermer">
                   <X className="w-4 h-4 text-white" />

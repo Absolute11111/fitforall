@@ -23,7 +23,7 @@ export default async function DashboardPage() {
       include: {
         program: {
           include: {
-            sessions: { orderBy: { order: "asc" }, take: 1, include: { exercises: { include: { exercise: true }, orderBy: { order: "asc" }, take: 5 } } },
+            sessions: { orderBy: { order: "asc" } },
           },
         },
       },
@@ -56,7 +56,11 @@ export default async function DashboardPage() {
   }
 
   const nutrition = calcNutrition(currentWeight, profile.goals, profile.heightCm ?? undefined, profile.age ?? undefined)
-  const todaySession = userProgram?.program.sessions[0]
+  const sessions = userProgram?.program.sessions ?? []
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
+  )
+  const todaySession = sessions.length > 0 ? sessions[dayOfYear % sessions.length] : undefined
 
   const motivations = [
     "Chaque séance compte. Même 15 minutes, c'est déjà une victoire.",

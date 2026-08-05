@@ -75,12 +75,50 @@ function useTimer(initial: number) {
 
 export function WorkoutClient({ session, userId, userEquipment }: Props) {
   const router = useRouter()
-  const [current, setCurrent] = useState(0)
-  const [completed, setCompleted] = useState<Set<number>>(new Set())
+  const STORAGE_KEY = `workout_state_${session.id}`
+
+  const [current, setCurrent] = useState<number>(() => {
+    if (typeof window === "undefined") return 0
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? (Number(JSON.parse(saved).current) || 0) : 0
+    } catch { return 0 }
+  })
+  const [completed, setCompleted] = useState<Set<number>>(() => {
+    if (typeof window === "undefined") return new Set()
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? new Set<number>(JSON.parse(saved).completed ?? []) : new Set()
+    } catch { return new Set() }
+  })
   const [showInfo, setShowInfo] = useState(false)
   const [done, setDone] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [rpe, setRpe] = useState(6)
+
+  // Persist state to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ current, completed: [...completed] }))
+    } catch {}
+  }, [current, completed, STORAGE_KEY])
+
+  // Wake Lock — prevent screen sleep during workout
+  useEffect(() => {
+    let lock: WakeLockSentinel | null = null
+    const acquire = async () => {
+      try {
+        lock = await (navigator as unknown as { wakeLock?: { request: (type: string) => Promise<WakeLockSentinel> } }).wakeLock?.request("screen") ?? null
+      } catch {}
+    }
+    acquire()
+    const onVisibility = () => { if (document.visibilityState === "visible") acquire() }
+    document.addEventListener("visibilitychange", onVisibility)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility)
+      lock?.release().catch(() => {})
+    }
+  }, [])
 
   const exercises = session.exercises
   const ex = exercises[current]?.exercise
@@ -108,6 +146,7 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ programSessionId: session.id, durationMin, rpe }),
     })
+    try { localStorage.removeItem(STORAGE_KEY) } catch {}
     setSubmitting(false)
     router.push("/dashboard")
   }
@@ -183,12 +222,12 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
         <Card className={cn("border-border overflow-hidden bg-card", !hasEquip && "border-yellow-500/40 bg-yellow-900/10")}>
           {/* Exercise image */}
           {ex.imageUrl ? (
-            <div className="relative w-full h-48 sm:h-56 bg-secondary/30">
+            <div className="relative w-full h-48 sm:h-56 bg-secondary/50">
               <Image
                 src={ex.imageUrl}
                 alt={ex.name}
                 fill
-                className="object-cover object-center"
+                className="object-contain p-2"
                 unoptimized
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
               />
