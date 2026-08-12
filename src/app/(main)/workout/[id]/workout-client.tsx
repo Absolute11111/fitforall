@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -115,6 +116,7 @@ function useTimer(initial: number) {
 
 export function WorkoutClient({ session, userId, userEquipment, isVaried }: Props) {
   const router = useRouter()
+  const { update: refreshSession } = useSession()
   const STORAGE_KEY = `workout_state_${session.id}`
 
   const [current, setCurrent] = useState<number>(() => {
@@ -148,6 +150,12 @@ export function WorkoutClient({ session, userId, userEquipment, isVaried }: Prop
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ current, completed: [...completed] }))
     } catch {}
   }, [current, completed, STORAGE_KEY])
+
+  // Session keep-alive — refresh JWT every 10 min so the session never expires mid-séance
+  useEffect(() => {
+    const id = setInterval(() => refreshSession(), 10 * 60 * 1000)
+    return () => clearInterval(id)
+  }, [refreshSession])
 
   // Wake Lock — prevent screen sleep during workout
   useEffect(() => {
