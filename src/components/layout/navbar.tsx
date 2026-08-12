@@ -30,7 +30,7 @@ export function Navbar() {
         {/* Wordmark */}
         <Link href="/dashboard" className="shrink-0">
           <span
-            className="font-display italic font-light text-xl text-foreground"
+            className="font-display italic font-light text-xl text-primary"
             style={{ letterSpacing: "0.04em" }}
           >
             FitForAll
@@ -46,13 +46,13 @@ export function Navbar() {
               className={cn(
                 "px-3 py-1.5 text-xs tracking-widest uppercase transition-colors",
                 pathname.startsWith(href)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-primary"
               )}
             >
               {label}
               {pathname.startsWith(href) && (
-                <span className="block h-px bg-foreground mt-0.5 w-full" />
+                <span className="block h-px bg-primary mt-0.5 w-full" />
               )}
             </Link>
           ))}
@@ -96,8 +96,8 @@ export function Navbar() {
               className={cn(
                 "px-3 py-2.5 text-xs tracking-widest uppercase transition-colors border-b border-border/50 last:border-b-0",
                 pathname.startsWith(href)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-primary"
               )}
             >
               {label}

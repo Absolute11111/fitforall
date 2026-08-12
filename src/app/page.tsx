@@ -51,7 +51,7 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
           <span
-            className="font-display italic text-xl sm:text-2xl font-light tracking-wide text-foreground select-none"
+            className="font-display italic text-xl sm:text-2xl font-light tracking-wide text-primary select-none"
             style={{ letterSpacing: "0.05em" }}
           >
             FitForAll
@@ -59,13 +59,13 @@ export default function LandingPage() {
           <nav className="flex items-center gap-6 sm:gap-8">
             <Link
               href="/login"
-              className="text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors"
             >
               Connexion
             </Link>
             <Link
               href="/register"
-              className="text-xs tracking-widest uppercase text-foreground border border-foreground px-4 py-1.5 hover:bg-foreground hover:text-background transition-colors"
+              className="text-xs tracking-widest uppercase text-primary border border-primary px-4 py-1.5 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               Commencer
             </Link>
@@ -96,13 +96,13 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 bg-foreground text-background text-xs tracking-widest uppercase px-6 py-3 hover:bg-foreground/90 transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-xs tracking-widest uppercase px-6 py-3 hover:bg-primary/90 transition-colors font-medium"
             >
               Créer mon programme <ArrowRight className="w-3.5 h-3.5" />
             </Link>
             <Link
               href="#programs"
-              className="inline-flex items-center gap-2 border border-border text-xs tracking-widest uppercase px-6 py-3 text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+              className="inline-flex items-center gap-2 border border-border text-xs tracking-widest uppercase px-6 py-3 text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
               Voir les programmes
             </Link>
@@ -116,7 +116,7 @@ export default function LandingPage() {
           {stats.map((s) => (
             <div key={s.label} className="py-8 sm:py-14 px-4 sm:px-10">
               <div
-                className="font-display font-light text-foreground leading-none mb-2"
+                className="font-display font-light text-primary leading-none mb-2"
                 style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)" }}
               >
                 {s.val}
@@ -173,10 +173,10 @@ export default function LandingPage() {
             {programs.map((p) => (
               <div key={p.n} className="p-7 sm:p-10 flex flex-col gap-6 group hover:bg-white/[0.02] transition-colors border-b border-border last:border-b-0 sm:[&:nth-child(1)]:border-b sm:[&:nth-child(2)]:border-b sm:[&:nth-child(3)]:border-b-0 sm:[&:nth-child(4)]:border-b-0">
                 <div className="flex items-start justify-between">
-                  <span className="font-display font-light text-4xl sm:text-5xl text-muted-foreground/20 group-hover:text-muted-foreground/40 transition-colors">
+                  <span className="font-display font-light text-4xl sm:text-5xl text-primary/20 group-hover:text-primary/60 transition-colors">
                     {p.n}
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-4 h-4 text-primary/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
                 <div>
                   <h3 className="font-display font-light text-xl sm:text-2xl mb-1">{p.name}</h3>
@@ -249,11 +249,11 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-3 bg-foreground text-background text-xs tracking-widest uppercase px-8 py-4 w-fit hover:bg-foreground/90 transition-colors"
+                className="inline-flex items-center gap-3 bg-primary text-primary-foreground text-xs tracking-widest uppercase px-8 py-4 w-fit hover:bg-primary/90 transition-colors font-medium"
               >
                 Je veux mon programme <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <Link href="/login" className="text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/login" className="text-xs tracking-wider text-muted-foreground hover:text-primary transition-colors">
                 Déjà un compte ? Connexion →
               </Link>
             </div>
@@ -264,7 +264,7 @@ export default function LandingPage() {
       {/* ── Footer ───────────────────────────────────────── */}
       <footer className="border-t border-border">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <span className="font-display italic font-light text-lg text-foreground/80">FitForAll</span>
+          <span className="font-display italic font-light text-lg text-primary/80">FitForAll</span>
           <p className="label-caps">Le sport, accessible à tous.</p>
         </div>
       </footer>
