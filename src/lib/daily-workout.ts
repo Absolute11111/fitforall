@@ -12,18 +12,32 @@ function seededRand(seed: string) {
   }
 }
 
-// Bodyweight / no-equipment values (always available)
-const ALWAYS_AVAILABLE = new Set(["none", "aucun", "poids du corps", "au poids du corps", "bodyweight", ""])
+// Equipment labels that never require special gear
+const ALWAYS_AVAILABLE = new Set([
+  "none", "aucun", "poids du corps", "au poids du corps", "bodyweight", "",
+])
 
-function exerciseMatchesEquipment(equipmentLabel: string, userEquipment: string[]): boolean {
-  const normalized = equipmentLabel.toLowerCase().trim()
+function exerciseMatchesEquipment(
+  equipmentLabel: string,
+  bodyweightOnly: boolean,
+  userEquipment: string[],
+): boolean {
+  // Explicit bodyweight flag — always OK
+  if (bodyweightOnly) return true
+
+  const normalized = (equipmentLabel ?? "").toLowerCase().trim()
+
+  // No-equipment labels — always OK
   if (ALWAYS_AVAILABLE.has(normalized)) return true
 
-  // Map French exercise label → profile key (e.g. "Haltères" → "dumbbells")
+  // Map French label → profile key (e.g. "Haltères" → "dumbbells")
   const mappedKey = EQUIPMENT_MAP[equipmentLabel]
-  if (mappedKey && (mappedKey === "none" || userEquipment.includes(mappedKey))) return true
+  if (mappedKey) {
+    if (mappedKey === "none") return true
+    if (userEquipment.includes(mappedKey)) return true
+  }
 
-  // Also try direct key match (in case exercises store keys directly)
+  // Direct key match as fallback
   if (userEquipment.includes(normalized)) return true
   if (userEquipment.includes(equipmentLabel)) return true
 
@@ -32,7 +46,8 @@ function exerciseMatchesEquipment(equipmentLabel: string, userEquipment: string[
 
 export async function getDailyWorkout(userId: string, sessionId: string, userEquipment: string[] = []) {
   const today = new Date().toISOString().split("T")[0]
-  const seed = `${userId}-${today}-${sessionId}`
+  // v2 in seed invalidates any server-side caching from before the equipment fix
+  const seed = `${userId}-${today}-${sessionId}-v2`
   const rand = seededRand(seed)
 
   const template = await db.programSession.findUnique({
@@ -45,9 +60,9 @@ export async function getDailyWorkout(userId: string, sessionId: string, userEqu
           exercise: {
             select: {
               id: true, slug: true, name: true, mainMuscle: true, level: true,
-              equipment: true, defaultSets: true, restSeconds: true, instructions: true,
-              safety: true, intensity: true, pattern: true, easyVariant: true,
-              hardVariant: true, imageUrl: true,
+              equipment: true, bodyweightOnly: true, defaultSets: true, restSeconds: true,
+              instructions: true, safety: true, intensity: true, pattern: true,
+              easyVariant: true, hardVariant: true, imageUrl: true,
             },
           },
         },
@@ -63,16 +78,17 @@ export async function getDailyWorkout(userId: string, sessionId: string, userEqu
     where: { mainMuscle: { in: muscles } },
     select: {
       id: true, slug: true, name: true, mainMuscle: true, level: true,
-      equipment: true, defaultSets: true, restSeconds: true, instructions: true,
-      safety: true, intensity: true, pattern: true, easyVariant: true,
-      hardVariant: true, imageUrl: true,
+      equipment: true, bodyweightOnly: true, defaultSets: true, restSeconds: true,
+      instructions: true, safety: true, intensity: true, pattern: true,
+      easyVariant: true, hardVariant: true, imageUrl: true,
     },
   })
 
-  // Filter by available equipment (bodyweight always included)
-  const available = userEquipment.length === 0
-    ? pool  // no equipment saved yet → show everything (onboarding state)
-    : pool.filter((ex) => exerciseMatchesEquipment(ex.equipment, userEquipment))
+  // Filter: keep only exercises doable with user's equipment.
+  // Empty equipment = bodyweight only (most restrictive, not "show all").
+  const available = pool.filter((ex) =>
+    exerciseMatchesEquipment(ex.equipment, ex.bodyweightOnly, userEquipment)
+  )
 
   const byMuscle: Record<string, typeof available> = {}
   for (const ex of available) {
@@ -82,7 +98,7 @@ export async function getDailyWorkout(userId: string, sessionId: string, userEqu
 
   const dailyExercises = template.exercises.map((slot) => {
     const candidates = byMuscle[slot.exercise.mainMuscle] ?? []
-    // If no equipment-compatible alternative exists, fall back to original
+    // If no equipment-compatible alternative exists, keep original (no crash)
     if (candidates.length === 0) return slot
     const idx = Math.floor(rand() * candidates.length)
     return { ...slot, exercise: candidates[idx] }

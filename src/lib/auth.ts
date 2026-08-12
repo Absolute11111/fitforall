@@ -42,8 +42,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Fresh login — set id and role from the auth provider
         token.id = user.id
         token.role = (user as { role?: string }).role ?? "user"
+      }
+      // Always re-fetch name + role from DB so the JWT reflects current plaintext values
+      if (token.id) {
+        const fresh = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { name: true, role: true },
+        })
+        if (fresh) {
+          token.name = fresh.name
+          token.role = fresh.role ?? "user"
+        }
       }
       return token
     },

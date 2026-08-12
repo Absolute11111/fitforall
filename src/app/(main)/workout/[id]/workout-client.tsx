@@ -117,7 +117,9 @@ function useTimer(initial: number) {
 export function WorkoutClient({ session, userId, userEquipment, isVaried }: Props) {
   const router = useRouter()
   const { update: refreshSession } = useSession()
-  const STORAGE_KEY = `workout_state_${session.id}`
+  // Include date in key so each day starts fresh (no stale exercise list from yesterday)
+  const today = new Date().toISOString().split("T")[0]
+  const STORAGE_KEY = `workout_state_${session.id}_${today}`
 
   const [current, setCurrent] = useState<number>(() => {
     if (typeof window === "undefined") return 0
