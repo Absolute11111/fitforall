@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info, AlertTriangle, Package, ImageOff } from "lucide-react"
+import { CheckCircle, ChevronRight, ChevronLeft, Timer, RotateCcw, Flag, Info, AlertTriangle, Package } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { EQUIPMENT_OPTIONS, EQUIPMENT_MAP } from "@/types"
@@ -41,6 +41,17 @@ type Props = {
   }
   userId: string
   userEquipment: string[]
+  isVaried?: boolean
+}
+
+const MUSCLE_COLORS: Record<string, { bg: string; emoji: string }> = {
+  "Pectoraux": { bg: "bg-red-900/30", emoji: "💪" },
+  "Quadriceps": { bg: "bg-blue-900/30", emoji: "🦵" },
+  "Fessiers": { bg: "bg-pink-900/30", emoji: "🍑" },
+  "Abdominaux": { bg: "bg-yellow-900/30", emoji: "🔥" },
+  "Dos": { bg: "bg-green-900/30", emoji: "🏋️" },
+  "Épaules": { bg: "bg-purple-900/30", emoji: "⬆️" },
+  "Cardio": { bg: "bg-orange-900/30", emoji: "❤️" },
 }
 
 function hasEquipment(exerciseEquipment: string | undefined, userEquipment: string[]): boolean {
@@ -56,6 +67,19 @@ function getEquipmentLabel(eq: string | undefined): string {
   return EQUIPMENT_OPTIONS.find((o) => o.value === EQUIPMENT_MAP[eq])?.label ?? eq
 }
 
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain); gain.connect(ctx.destination)
+    osc.frequency.value = 880
+    gain.gain.setValueAtTime(0.3, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+    osc.start(); osc.stop(ctx.currentTime + 0.4)
+  } catch {}
+}
+
 function useTimer(initial: number) {
   const [time, setTime] = useState(initial)
   const [running, setRunning] = useState(false)
@@ -63,6 +87,7 @@ function useTimer(initial: number) {
   useEffect(() => {
     if (!running) return
     if (time <= 0) { setRunning(false); return }
+    if (time === 1) playBeep()
     const t = setTimeout(() => setTime((t) => t - 1), 1000)
     return () => clearTimeout(t)
   }, [running, time])
@@ -73,7 +98,7 @@ function useTimer(initial: number) {
   return { time, running, start, reset }
 }
 
-export function WorkoutClient({ session, userId, userEquipment }: Props) {
+export function WorkoutClient({ session, userId, userEquipment, isVaried }: Props) {
   const router = useRouter()
   const STORAGE_KEY = `workout_state_${session.id}`
 
@@ -95,6 +120,12 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
   const [done, setDone] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [rpe, setRpe] = useState(6)
+  const [setsCount, setSetsCount] = useState(0)
+
+  // Reset set counter when exercise changes
+  useEffect(() => {
+    setSetsCount(0)
+  }, [current])
 
   // Persist state to localStorage on every change
   useEffect(() => {
@@ -190,7 +221,14 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
       {/* Header */}
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-wide">{session.program.name}</p>
-        <h1 className="font-display text-3xl uppercase tracking-wide">{session.sessionName}</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <h1 className="font-display text-3xl uppercase tracking-wide">{session.sessionName}</h1>
+          {isVaried && (
+            <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/5 shrink-0">
+              🔀 Varié aujourd'hui
+            </Badge>
+          )}
+        </div>
         <div className="mt-2">
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Exercice {current + 1}/{exercises.length}</span>
@@ -218,9 +256,10 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
       {ex && (() => {
         const hasEquip = hasEquipment(ex.equipment, userEquipment)
         const equipLabel = getEquipmentLabel(ex.equipment)
+        const mc = MUSCLE_COLORS[ex.mainMuscle] ?? { bg: "bg-secondary/30", emoji: "💪" }
         return (
         <Card className={cn("border-border overflow-hidden bg-card", !hasEquip && "border-yellow-500/40 bg-yellow-900/10")}>
-          {/* Exercise image */}
+          {/* Exercise image or colored placeholder */}
           {ex.imageUrl ? (
             <div className="relative w-full h-48 sm:h-56 bg-secondary/50">
               <Image
@@ -238,8 +277,9 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
               </div>
             </div>
           ) : (
-            <div className="h-24 bg-secondary/20 flex items-center justify-center">
-              <ImageOff className="w-8 h-8 text-muted-foreground/30" />
+            <div className={`h-32 ${mc.bg} flex flex-col items-center justify-center gap-1`}>
+              <span className="text-3xl">{mc.emoji}</span>
+              <span className="text-xs text-muted-foreground font-medium">{ex.mainMuscle}</span>
             </div>
           )}
 
@@ -315,7 +355,25 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
             </div>
           )}
 
-          <div className="flex gap-3">
+          {/* Set counter */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSetsCount((s) => s + 1)}
+              className="text-sm font-medium border border-border rounded-lg px-4 py-2 hover:border-primary transition-colors"
+            >
+              Série {setsCount + 1} / {ex.defaultSets ? ex.defaultSets.split("x")[0] : "3"}
+            </button>
+            {setsCount > 0 && (
+              <button
+                onClick={() => setSetsCount(0)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Réinitialiser
+              </button>
+            )}
+          </div>
+
+          <div className="flex gap-3 items-center">
             {!completed.has(current) ? (
               <Button className="flex-1 h-11 gap-1" onClick={() => { markDone(current) }}>
                 <CheckCircle className="w-4 h-4" /> Exercice terminé
@@ -327,6 +385,9 @@ export function WorkoutClient({ session, userId, userEquipment }: Props) {
             )}
             <Button variant="outline" size="icon" onClick={() => timer.start(restSec)} className="h-11 w-11 shrink-0">
               <Timer className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="text-muted-foreground text-xs shrink-0" onClick={() => { goNext() }}>
+              Passer →
             </Button>
           </div>
           </div>{/* end p-5 content div */}

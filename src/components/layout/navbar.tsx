@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { Dumbbell, LayoutDashboard, ListChecks, TrendingUp, Utensils, BookOpen, Settings, LogOut, Menu, X, ShieldCheck, Package } from "lucide-react"
+import { Dumbbell, LayoutDashboard, ListChecks, TrendingUp, Utensils, BookOpen, Settings, LogOut, Menu, X, ShieldCheck, Package, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -13,6 +13,7 @@ const navItems = [
   { href: "/programs", label: "Programmes", icon: ListChecks },
   { href: "/exercises", label: "Exercices", icon: BookOpen },
   { href: "/progress", label: "Progression", icon: TrendingUp },
+  { href: "/history", label: "Historique", icon: History },
   { href: "/nutrition", label: "Nutrition", icon: Utensils },
   { href: "/equipment", label: "Équipement", icon: Package },
   { href: "/settings", label: "Réglages", icon: Settings },
@@ -53,7 +54,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {session?.user?.email === "admin@fitforall.com" && (
+          {session?.user?.role === "admin" && (
             <Link href="/admin">
               <Button variant="ghost" size="icon" className="hidden md:flex">
                 <ShieldCheck className="w-4 h-4" />
@@ -93,7 +94,7 @@ export function Navbar() {
               {label}
             </Link>
           ))}
-          {session?.user?.email === "admin@fitforall.com" && (
+          {session?.user?.role === "admin" && (
             <Link
               href="/admin"
               onClick={() => setOpen(false)}

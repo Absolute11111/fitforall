@@ -7,19 +7,6 @@ const prisma = new PrismaClient({ adapter })
 
 const BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises"
 
-// Fallback images by pattern
-const PATTERN_FALLBACK: Record<string, string> = {
-  Push: `${BASE}/Incline_Push-Up/0.jpg`,
-  Pull: `${BASE}/Bodyweight_Mid_Row/0.jpg`,
-  Legs: `${BASE}/Bodyweight_Squat/0.jpg`,
-  Core: `${BASE}/Plank/0.jpg`,
-  Cardio: `${BASE}/Mountain_Climbers/0.jpg`,
-  "Cardio-Corde": `${BASE}/Mountain_Climbers/0.jpg`,
-  Full: `${BASE}/Mountain_Climbers/0.jpg`,
-  Mobility: `${BASE}/Superman/0.jpg`,
-  Recovery: `${BASE}/Superman/0.jpg`,
-}
-
 // Manual mapping: slug → image URL
 const SLUG_MAP: Record<string, string> = {
   // ── Pompes / Push ──────────────────────────────────────
@@ -98,38 +85,18 @@ const SLUG_MAP: Record<string, string> = {
 }
 
 async function main() {
-  console.log("🖼️  Updating exercise images...")
-
+  console.log("Setting verified exercise images (no pattern fallback)...")
   let updated = 0
-  let fallback = 0
-
-  // Update exercises with explicit mapping
   for (const [slug, imageUrl] of Object.entries(SLUG_MAP)) {
     const result = await prisma.exercise.updateMany({
-      where: { slug, imageUrl: null },
+      where: { slug },
       data: { imageUrl },
     })
     if (result.count > 0) updated++
   }
-  console.log(`✅ ${updated} exercises updated with specific images`)
-
-  // Update remaining exercises with pattern-based fallback
-  const remaining = await prisma.exercise.findMany({
-    where: { imageUrl: null, pattern: { not: null } },
-    select: { id: true, slug: true, pattern: true },
-  })
-
-  for (const ex of remaining) {
-    const imageUrl = ex.pattern ? (PATTERN_FALLBACK[ex.pattern] ?? PATTERN_FALLBACK.Core) : null
-    if (imageUrl) {
-      await prisma.exercise.update({ where: { id: ex.id }, data: { imageUrl } })
-      fallback++
-    }
-  }
-  console.log(`✅ ${fallback} exercises updated with pattern fallback`)
-
+  console.log(`${updated} exercises updated with verified images`)
   const total = await prisma.exercise.count({ where: { imageUrl: { not: null } } })
-  console.log(`🎉 Total exercises with images: ${total}`)
+  console.log(`Total with images: ${total}`)
 }
 
 main()
