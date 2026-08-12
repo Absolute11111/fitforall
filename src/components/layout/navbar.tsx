@@ -3,20 +3,19 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { Dumbbell, LayoutDashboard, ListChecks, TrendingUp, Utensils, BookOpen, Settings, LogOut, Menu, X, ShieldCheck, Package, History } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { LogOut, Menu, X, ShieldCheck } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/programs", label: "Programmes", icon: ListChecks },
-  { href: "/exercises", label: "Exercices", icon: BookOpen },
-  { href: "/progress", label: "Progression", icon: TrendingUp },
-  { href: "/history", label: "Historique", icon: History },
-  { href: "/nutrition", label: "Nutrition", icon: Utensils },
-  { href: "/equipment", label: "Équipement", icon: Package },
-  { href: "/settings", label: "Réglages", icon: Settings },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/programs", label: "Programmes" },
+  { href: "/exercises", label: "Exercices" },
+  { href: "/progress", label: "Progression" },
+  { href: "/history", label: "Historique" },
+  { href: "/nutrition", label: "Nutrition" },
+  { href: "/equipment", label: "Équipement" },
+  { href: "/settings", label: "Réglages" },
 ]
 
 export function Navbar() {
@@ -25,72 +24,82 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 py-2.5 flex items-center justify-between gap-4">
-        <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-          <div className="w-8 h-8 bg-primary flex items-center justify-center">
-            <Dumbbell className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="font-display text-xl tracking-wide normal-case text-foreground">FitForAll</span>
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-4">
+
+        {/* Wordmark */}
+        <Link href="/dashboard" className="shrink-0">
+          <span
+            className="font-display italic font-light text-xl text-foreground"
+            style={{ letterSpacing: "0.04em" }}
+          >
+            FitForAll
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map(({ href, label, icon: Icon }) => (
+        <nav className="hidden lg:flex items-center gap-0.5">
+          {navItems.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors border-b-2",
+                "px-3 py-1.5 text-xs tracking-widest uppercase transition-colors",
                 pathname.startsWith(href)
-                  ? "text-primary border-primary"
-                  : "text-muted-foreground hover:text-foreground border-transparent"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="w-4 h-4" />
               {label}
+              {pathname.startsWith(href) && (
+                <span className="block h-px bg-foreground mt-0.5 w-full" />
+              )}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        {/* Right controls */}
+        <div className="flex items-center gap-3">
           {session?.user?.role === "admin" && (
-            <Link href="/admin">
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <ShieldCheck className="w-4 h-4" />
-              </Button>
+            <Link
+              href="/admin"
+              className="hidden lg:flex items-center gap-1.5 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Admin
             </Link>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="hidden md:flex text-muted-foreground hover:text-foreground"
+            className="hidden lg:flex items-center gap-1.5 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
-            <LogOut className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="md:hidden w-10 h-10" onClick={() => setOpen(!open)} aria-label="Menu">
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            className="lg:hidden w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            {open ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile drawer */}
       {open && (
-        <div className="md:hidden border-t border-border bg-background px-4 py-3 flex flex-col gap-1">
-          {navItems.map(({ href, label, icon: Icon }) => (
+        <div className="lg:hidden border-t border-border bg-background px-5 py-4 flex flex-col gap-0.5">
+          {navItems.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "px-3 py-2.5 text-xs tracking-widest uppercase transition-colors border-b border-border/50 last:border-b-0",
                 pathname.startsWith(href)
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="w-4 h-4" />
               {label}
             </Link>
           ))}
@@ -98,20 +107,17 @@ export function Navbar() {
             <Link
               href="/admin"
               onClick={() => setOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                pathname.startsWith("/admin") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-              )}
+              className="flex items-center gap-2 px-3 py-2.5 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors border-t border-border mt-1 pt-3"
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-3.5 h-3.5" />
               Admin
             </Link>
           )}
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 px-3 py-2.5 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
             Déconnexion
           </button>
         </div>
