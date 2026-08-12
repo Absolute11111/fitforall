@@ -80,6 +80,21 @@ function playBeep() {
   } catch {}
 }
 
+function useElapsed(startTime: number) {
+  const [elapsed, setElapsed] = useState(Math.floor((Date.now() - startTime) / 1000))
+  useEffect(() => {
+    const t = setInterval(() => setElapsed(Math.floor((Date.now() - startTime) / 1000)), 1000)
+    return () => clearInterval(t)
+  }, [startTime])
+  const h = Math.floor(elapsed / 3600)
+  const m = Math.floor((elapsed % 3600) / 60)
+  const s = elapsed % 60
+  const display = h > 0
+    ? `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
+    : `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
+  return { elapsed, display }
+}
+
 function useTimer(initial: number) {
   const [time, setTime] = useState(initial)
   const [running, setRunning] = useState(false)
@@ -156,6 +171,7 @@ export function WorkoutClient({ session, userId, userEquipment, isVaried }: Prop
   const restSec = ex?.restSeconds ?? 60
   const timer = useTimer(restSec)
   const startTime = useState(() => Date.now())[0]
+  const { display: elapsedDisplay } = useElapsed(startTime)
 
   const pct = Math.round(((completed.size) / exercises.length) * 100)
 
@@ -232,7 +248,10 @@ export function WorkoutClient({ session, userId, userEquipment, isVaried }: Prop
         <div className="mt-2">
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Exercice {current + 1}/{exercises.length}</span>
-            <span>{pct}% complété</span>
+            <span className="flex items-center gap-1.5">
+              <span className="tabular-nums font-mono font-semibold text-primary">{elapsedDisplay}</span>
+              <span>{pct}% complété</span>
+            </span>
           </div>
           <Progress value={pct} className="h-1.5" />
         </div>
