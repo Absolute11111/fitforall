@@ -9,19 +9,21 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
   const session = await auth()
   if (!session?.user?.id) redirect("/login")
 
-  const dailyWorkout = await getDailyWorkout(session.user.id, id)
-  if (!dailyWorkout) redirect("/programs")
-
+  // Fetch equipment first so getDailyWorkout can filter exercises
   const profile = await db.profile.findUnique({
     where: { userId: session.user.id },
     select: { equipment: true },
   })
 
+  const userEquipment = profile?.equipment ?? []
+  const dailyWorkout = await getDailyWorkout(session.user.id, id, userEquipment)
+  if (!dailyWorkout) redirect("/programs")
+
   return (
     <WorkoutClient
       session={dailyWorkout}
       userId={session.user.id}
-      userEquipment={profile?.equipment ?? []}
+      userEquipment={userEquipment}
       isVaried={dailyWorkout.isVaried}
     />
   )

@@ -15,9 +15,8 @@ const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof cre
 const base = globalForPrisma.prisma ?? createPrismaClient()
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = base
 
-// Encrypted PII fields per model
+// Encrypted PII fields per model — name excluded (display name, not sensitive)
 const ENC_WRITE: Record<string, string[]> = {
-  user: ["name"],
   profile: ["injuries", "gender"],
 }
 
@@ -45,18 +44,6 @@ function decryptResult(model: string, result: unknown) {
 
 export const db = base.$extends({
   query: {
-    user: {
-      async $allOperations({ operation, args, query }) {
-        const writeOps = ["create", "update", "upsert", "createMany", "updateMany"]
-        if (writeOps.includes(operation)) {
-          const a = args as Record<string, unknown>
-          encryptData("user", a.data as Record<string, unknown>)
-        }
-        const result = await query(args)
-        decryptResult("user", result)
-        return result
-      },
-    },
     profile: {
       async $allOperations({ operation, args, query }) {
         const writeOps = ["create", "update", "upsert", "createMany", "updateMany"]
